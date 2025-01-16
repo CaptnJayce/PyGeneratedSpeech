@@ -1,23 +1,43 @@
 import asyncio
 import edge_tts
-from playsound import playsound
+import pygame
+import os
 
-# voice chosen for QT is en-IE-EmilyNeural
+# Voice chosen for QT is en-IE-EmilyNeural
 VOICES = ['en-AU-NatashaNeural', 'en-CA-ClaraNeural', 'en-GB-LibbyNeural', 'en-IN-NeerjaNeural', 'en-IE-EmilyNeural']
-TEXT = "Hello! My name is Quartermaster, your assistive AI"
 VOICE = VOICES[4]
 OUTPUT_FILE = "test.mp3"
 
-# asynchronous as to prevent problems with saving to file
-# also important as it will be running alongside llm agents
-async def main() -> None:
-    communicate = edge_tts.Communicate(TEXT, VOICE)
+async def generate_speech(text: str) -> None:
+    communicate = edge_tts.Communicate(text, VOICE)
     await communicate.save(OUTPUT_FILE)
 
-loop = asyncio.get_event_loop_policy().get_event_loop()
-try:
-    loop.run_until_complete(main())
-finally:
-    loop.close()
+def play_audio(file_path):
+    pygame.mixer.init()
+    pygame.mixer.music.load(file_path)
+    pygame.mixer.music.play()
 
-playsound(OUTPUT_FILE)
+    while pygame.mixer.music.get_busy():
+        pygame.time.Clock().tick(10)
+
+    pygame.mixer.music.stop()
+    pygame.mixer.quit()
+
+def main():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    try:
+        while True:
+            text = input("Say: ")
+            loop.run_until_complete(generate_speech(text))
+            play_audio(OUTPUT_FILE)
+
+            if os.path.exists(OUTPUT_FILE):
+                os.remove(OUTPUT_FILE)
+
+    finally:
+        loop.close()
+
+if __name__ == "__main__":
+    main()
