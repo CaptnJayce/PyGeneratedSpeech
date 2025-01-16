@@ -1,5 +1,6 @@
 import asyncio
 import edge_tts
+from playsound import playsound
 
 # voice chosen for QT is en-IE-EmilyNeural
 VOICES = ['en-AU-NatashaNeural', 'en-CA-ClaraNeural', 'en-GB-LibbyNeural', 'en-IN-NeerjaNeural', 'en-IE-EmilyNeural']
@@ -18,3 +19,5 @@ try:
     loop.run_until_complete(main())
 finally:
     loop.close()
+
+playsound(OUTPUT_FILE)
