@@ -1,0 +1,4 @@
+asyncio
+edge_tts
+pygame
+SpeechRecognition
